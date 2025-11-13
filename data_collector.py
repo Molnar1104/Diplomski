@@ -119,6 +119,12 @@ def combine_and_engineer_features():
 if __name__ == '__main__':
     try:
         final_dataset = combine_and_engineer_features()
+
+        # Save the final dataset to a CSV file for the modeling script
+        output_path = 'final_dataset.csv'
+        final_dataset.to_csv(output_path)
+        print(f"\nDataset successfully saved to {output_path}")
+
     except ValueError as e:
         print(f"\nFATAL ERROR: {e}")
     except Exception as e:
