@@ -1,0 +1,51 @@
+Here are the descriptions of the core machine learning concepts used in the baseline model. You can use these as a starting point for your thesis and translate them into Croatian.
+
+---
+
+### Random Forest Classifier
+
+**Concept:**
+A Random Forest is a powerful and versatile machine learning algorithm that belongs to the category of "ensemble learning." The core idea of an ensemble method is to combine the predictions from several individual models to produce a more accurate and robust prediction than any single model.
+
+Specifically, a Random Forest builds a multitude of individual "decision trees" during training. Each tree is trained on a random subset of the data and a random subset of the features. When making a prediction for a new data point, each tree in the forest "votes" for a class (e.g., "price will go up" or "price will go down"). The forest's final prediction is the class that receives the most votes. This process of using multiple trees and randomness helps to correct for the errors and biases of individual trees, reducing the risk of overfitting.
+
+**Interpretation in our Context:**
+We are using a Random Forest to classify whether the next day's price will go up (class 1) or down (class 0) based on the technical indicators and market data we have provided as features.
+
+---
+
+### Training Set and Testing Set
+
+**Concept:**
+In machine learning, it is crucial to evaluate a model's performance on data it has never seen before. To achieve this, the dataset is split into two distinct parts:
+- **Training Set:** This is the majority of the data (e.g., 80%) that is used to "teach" or "fit" the model. The model learns the underlying patterns and relationships from the features and their corresponding target labels in this set.
+- **Testing Set:** This is the remaining portion of the data that is held back and used only after the model has been trained. The model makes predictions on the features in this set, and these predictions are compared to the actual target labels to evaluate the model's performance.
+
+**Time-Series Split:**
+For financial data, a simple random split is incorrect because it can lead to "lookahead bias" (using future data to predict the past). We use a `TimeSeriesSplit`, which ensures that the training set always consists of data that occurred *before* the data in the testing set. This simulates a real-world scenario where you would use past data to predict the future.
+
+---
+
+### Evaluation Metrics
+
+**Accuracy:**
+- **Concept:** Accuracy is the most straightforward metric. It measures the proportion of total predictions that the model got correct. It is calculated as: `(Number of Correct Predictions) / (Total Number of Predictions)`.
+- **Interpretation:** An accuracy of 0.54 (or 54%) means the model correctly predicted the outcome 54% of the time on the test set. In a binary classification problem like ours, a baseline accuracy is 50% (random guessing), so we are looking for a score significantly above that.
+
+**Precision:**
+- **Concept:** Precision answers the question: "Of all the times the model predicted the price would go up, what proportion of those predictions were actually correct?" It is calculated as: `(True Positives) / (True Positives + False Positives)`.
+- **Interpretation:** High precision means that when the model signals a "buy" (predicts the price will go up), it is very likely to be correct. This is an important metric for avoiding false alarms.
+
+**Recall (Sensitivity):**
+- **Concept:** Recall answers the question: "Of all the times the price *actually* went up, what proportion did our model correctly identify?" It is calculated as: `(True Positives) / (True Positives + False Negatives)`.
+- **Interpretation:** High recall means the model is good at identifying most of the actual positive cases (up-moves). There is often a trade-off between precision and recall.
+
+**Confusion Matrix:**
+- **Concept:** A confusion matrix is a table that provides a detailed breakdown of a model's performance. It shows the number of correct and incorrect predictions for each class. For a binary problem, it looks like this:
+
+|                | Predicted Negative | Predicted Positive |
+|----------------|--------------------|--------------------|
+| Actual Negative| True Negative (TN) | False Positive (FP)|
+| Actual Positive| False Negative (FN)| True Positive (TP) |
+
+- **Interpretation:** It allows you to see not just the total number of errors, but also the *types* of errors being made. For example, you can see how many times the model incorrectly predicted an up-move (False Positive) versus how many times it missed an actual up-move (False Negative).
