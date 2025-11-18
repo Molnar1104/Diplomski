@@ -1,0 +1,44 @@
+Here are the descriptions of the technical indicators. You can use these as a starting point for your thesis and translate them into Croatian.
+
+---
+
+### Simple Moving Average (SMA)
+
+**Concept:**
+A Simple Moving Average (SMA) is a core technical indicator that smooths out price data to create a single flowing line, making it easier to identify the direction of the trend. It is calculated by summing the closing prices of a security over a specific number of periods (e.g., 10, 50, or 200 days) and then dividing by that number of periods.
+
+**Interpretation:**
+- **Trend Identification:** When the price is consistently above the SMA, it is generally considered an uptrend. Conversely, a price consistently below the SMA suggests a downtrend.
+- **Support and Resistance:** Longer-term SMAs (like the 50-day or 200-day) are often watched as key levels of support or resistance.
+- **Crossovers:** When a short-term SMA (e.g., 50-day) crosses above a long-term SMA (e.g., 200-day), it is known as a "golden cross" and is often seen as a bullish signal. The opposite, a "death cross," is a bearish signal.
+
+---
+
+### Relative Strength Index (RSI)
+
+**Concept:**
+The Relative Strength Index (RSI) is a momentum oscillator that measures the speed and change of price movements. It oscillates between zero and 100. The RSI is calculated using the average gain and average loss over a specified period, typically 14 days.
+
+**Interpretation:**
+- **Overbought/Oversold:** The RSI is primarily used to identify overbought or oversold conditions in a market.
+  - An RSI reading above 70 is often considered overbought, suggesting that the asset may be due for a price correction.
+  - An RSI reading below 30 is often considered oversold, suggesting that the asset may be due for a rebound.
+- **Divergence:** Divergence occurs when the price makes a new high or low, but the RSI does not. For example, if the price makes a new high but the RSI makes a lower high, it is a bearish divergence and can signal a potential price reversal.
+
+---
+
+### Moving Average Convergence Divergence (MACD)
+
+**Concept:**
+The Moving Average Convergence Divergence (MACD) is a trend-following momentum indicator that shows the relationship between two exponential moving averages (EMAs) of a security’s price. The MACD is calculated by subtracting the 26-period EMA from the 12-period EMA. A nine-period EMA of the MACD, called the "signal line," is then plotted on top of the MACD line, which can function as a trigger for buy and sell signals.
+
+**Interpretation:**
+The MACD is composed of three main components:
+1.  **MACD Line:** The difference between the 12-period and 26-period EMAs.
+2.  **Signal Line:** The 9-period EMA of the MACD line.
+3.  **Histogram:** The difference between the MACD line and the signal line.
+
+Key signals from the MACD include:
+- **Crossovers:** A bullish signal occurs when the MACD line crosses above the signal line. A bearish signal occurs when the MACD line crosses below the signal line.
+- **Centerline Crossovers:** A bullish signal occurs when the MACD line crosses above the zero line. A bearish signal occurs when it crosses below the zero line.
+- **Divergence:** Similar to the RSI, divergence between the price and the MACD can signal a potential reversal.

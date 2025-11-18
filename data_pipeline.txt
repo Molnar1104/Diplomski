@@ -1,0 +1,42 @@
+Here is a description of the data pipeline for your thesis. This explains the end-to-end process from raw data collection to the generation of a final, feature-engineered dataset ready for modeling.
+
+---
+
+### Data Pipeline and Feature Engineering Workflow
+
+The goal of our data pipeline is to systematically collect raw financial data and transform it into a structured, feature-rich dataset suitable for training a machine learning model. The entire process is orchestrated by the `data_collector.py` script and can be broken down into the following key stages:
+
+**Stage 1: Raw Data Collection**
+
+1.  **Market Data:** We begin by fetching historical daily price data for the S&P 500 index, using 'SPY' as the ticker. This data is sourced from Yahoo Finance via the `yfinance` library. The key pieces of information we retrieve are the daily closing price (`Close`) and trading volume (`Volume`).
+
+2.  **Volatility Data (VIX):** Simultaneously, we fetch historical data for the CBOE Volatility Index ('^VIX'). The VIX is often referred to as the "fear index" and provides a measure of expected market volatility. We use its closing price (`VIX_Close`) as a feature.
+
+3.  **Sentiment Data (Placeholder):** At this stage, we also generate placeholder (dummy) sentiment data. This data is designed to have the same structure as the real sentiment data we will integrate later, with columns for `Sentiment_Score` and `News_Volume`. Crucially, this dummy data is generated using the same date index as the market data to ensure perfect alignment.
+
+**Stage 2: Data Cleaning and Merging**
+
+1.  **Timezone Standardization:** Data from different sources can have inconsistent timezone information (or lack it entirely). To ensure reliable merging, we standardize all datasets by converting their date indices to be "timezone-naive," meaning we join them based on the date alone.
+
+2.  **Data Merging:** The separate DataFrames (market, VIX, and sentiment) are merged into a single, unified DataFrame. We use a `left join` with the market data as the base. This is a robust method that ensures we keep all trading days from our primary `SPY` dataset, even if there are occasional missing data points for the VIX on those days.
+
+3.  **Handling Missing Values (VIX):** After the join, it's possible some rows might have a missing `VIX_Close` value (e.g., on a day the VIX data was not reported). We handle this by "forward-filling" the VIX data, where any missing value is replaced by the most recent known value.
+
+**Stage 3: Feature Engineering**
+
+This is the most critical stage, where we create the predictive features (indicators) that the model will learn from.
+
+1.  **Target Variable:** Our prediction goal is to determine if the S&P 500 will go up or down on the *next* trading day. We create our target variable, `Target_Next_Day`, by "shifting" the closing price data from the future back one day and checking if it was higher than the current day's close. This results in a binary target: 1 if the next day was up, and 0 otherwise.
+
+2.  **Technical Indicators:** We use the `pandas-ta` library to calculate a suite of standard technical indicators from the closing price data. These include:
+    *   **Simple Moving Averages (SMA):** We calculate SMAs over short (10, 20-day), medium (50-day), and long (200-day) time horizons to capture trends of different lengths.
+    *   **Relative Strength Index (RSI):** A 14-period RSI is calculated to measure price momentum and identify potential overbought or oversold conditions.
+    *   **Moving Average Convergence Divergence (MACD):** The MACD indicator (including its signal line and histogram) is added to provide insight into trend-following momentum.
+
+3.  **Sentiment Feature (Engineered):** Using the sentiment data, we create an engineered feature called `Weighted_Sentiment`. This is calculated by multiplying the `Sentiment_Score` by the `News_Volume`, based on the hypothesis that a strong sentiment score is more significant if it is backed by a high volume of news.
+
+**Stage 4: Finalization**
+
+1.  **Dropping Rows with `NaN`s:** The calculation of technical indicators (especially the 200-day SMA) requires a "look-back" period, which results in `NaN` (Not a Number) values at the beginning of our dataset. Since the model cannot handle `NaN`s, we remove these initial rows to create a final, clean dataset where every single cell has a valid value.
+
+2.  **Saving the Dataset:** The final, cleaned, and feature-rich DataFrame is saved to a CSV file (`final_dataset.csv`). This modular approach separates our data preparation from our modeling, allowing us to run the modeling script independently without having to re-run the entire data collection pipeline each time.
