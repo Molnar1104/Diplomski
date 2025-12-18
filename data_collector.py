@@ -67,11 +67,23 @@ def combine_and_engineer_features():
     if not vix_df.empty and vix_df.index.tz is not None:
         vix_df.index = vix_df.index.tz_localize(None)
 
-    # 3. Generate Dummy Sentiment Data (Aligned with the NOW tz-naive Market Data Index)
-    print("WARNING: Using DUMMY sentiment data. REPLACE THIS with a real API call.")
-    sentiment_df = pd.DataFrame(index=market_df.index)
-    sentiment_df['Sentiment_Score'] = np.random.uniform(-0.5, 0.5, len(market_df))
-    sentiment_df['News_Volume'] = np.random.randint(50, 500, len(market_df))
+# Find Step 3 in data_collector.py (around line 56) and REPLACE it with this:
+
+    # 3. Load Real Sentiment Data
+    print("Loading REAL sentiment data...")
+    try:
+        # Load the CSV created in Step 2
+        sentiment_df = pd.read_csv('daily_sentiment.csv', index_col='Date', parse_dates=True)
+        
+        # Make sure index is timezone-naive to match market data
+        if sentiment_df.index.tz is not None:
+            sentiment_df.index = sentiment_df.index.tz_localize(None)
+            
+    except FileNotFoundError:
+        print("ERROR: 'daily_sentiment.csv' not found. Running with DUMMY data (for testing only).")
+        sentiment_df = pd.DataFrame(index=market_df.index)
+        sentiment_df['Sentiment_Score'] = 0
+        sentiment_df['News_Volume'] = 0
 
     # 4. Merge DataFrames
     combined_df = market_df.copy()
@@ -101,9 +113,17 @@ def combine_and_engineer_features():
     combined_df = pd.concat([combined_df, macd], axis=1)
 
     # C. Sentiment Features
-    if 'Sentiment_Score' in combined_df.columns and 'News_Volume' in combined_df.columns:
+    if 'Sentiment_Score' in combined_df.columns:
+        # 1. The Raw Score (What you have now)
         combined_df['Weighted_Sentiment'] = combined_df['Sentiment_Score'] * combined_df['News_Volume']
-
+        
+        # 2. NEW: Rolling Sentiment (Trend of News)
+        # Does the last 3 days of news predict tomorrow?
+        combined_df['Sentiment_SMA_3'] = combined_df['Sentiment_Score'].rolling(window=3).mean()
+        combined_df['Sentiment_SMA_7'] = combined_df['Sentiment_Score'].rolling(window=7).mean()
+        
+        # 3. NEW: Sentiment Momentum (Is sentiment improving or getting worse?)
+        combined_df['Sentiment_Momentum'] = combined_df['Sentiment_Score'] - combined_df['Sentiment_Score'].shift(1)
     # 6. Finalize DataFrame
     # Forward-fill VIX data for any non-trading days where it might be missing
     if 'VIX_Close' in combined_df.columns:
